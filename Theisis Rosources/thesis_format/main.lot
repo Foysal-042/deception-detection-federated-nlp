@@ -1,0 +1,23 @@
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {1.1}{\ignorespaces \xpg@aux {}{english}\ignorespaces Illustrative examples of deception detection using the proposed system.}}{1}{table.caption.7}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2.1}{\ignorespaces Comparison of representative studies in deception detection and federated learning.}}{14}{table.2.1}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces \xpg@aux {}{english}\ignorespaces Dataset composition by deception domain.}}{18}{table.caption.9}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces \xpg@aux {}{english}\ignorespaces Dataset composition by language register.}}{19}{table.caption.10}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces \xpg@aux {}{english}\ignorespaces Client heterogeneity by dimension: the real, domain-based client partition compared against a random partition of the same data (mean $\pm $ std over repeated random partitions). Multiplier is the real partition's JS divergence divided by the random baseline's mean.}}{20}{table.caption.11}%
+\contentsline {table}{\numberline {3.4}{\ignorespaces \xpg@aux {}{english}\ignorespaces Train/validation/test split sizes.}}{21}{table.caption.12}%
+\contentsline {table}{\numberline {3.5}{\ignorespaces \xpg@aux {}{english}\ignorespaces Representative examples from the multilingual deception datasets .}}{22}{table.caption.13}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces \xpg@aux {}{english}\ignorespaces Backbone encoders evaluated in this thesis.}}{26}{table.caption.16}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces \xpg@aux {}{english}\ignorespaces Centralized training hyperparameters.}}{27}{table.caption.17}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces \xpg@aux {}{english}\ignorespaces Federated (FedProx) training hyperparameters.}}{29}{table.caption.19}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {5.1}{\ignorespaces \xpg@aux {}{english}\ignorespaces Centralized (non-federated) baseline results .}}{34}{table.caption.20}%
+\contentsline {table}{\numberline {5.2}{\ignorespaces \xpg@aux {}{english}\ignorespaces Federated (FedProx) results using five domain-partitioned clients.}}{34}{table.caption.21}%
+\contentsline {table}{\numberline {5.3}{\ignorespaces \xpg@aux {}{english}\ignorespaces Centralized test accuracy by deception domain, for all five backbones. }}{38}{table.caption.24}%
+\contentsline {table}{\numberline {5.4}{\ignorespaces \xpg@aux {}{english}\ignorespaces Accuracy- and F1-retention: federated performance as a percentage of centralized performance, same backbone checkpoint in both rows.}}{40}{table.caption.25}%
+\contentsline {table}{\numberline {5.5}{\ignorespaces \xpg@aux {}{english}\ignorespaces Comparison of performance results between previous related studies and the proposed approach. The reported metrics from existing works correspond to their original datasets and experimental configurations, serving as a reference for contextual evaluation.}}{42}{table.caption.27}%
+\contentsline {table}{\numberline {5.6}{\ignorespaces \xpg@aux {}{english}\ignorespaces Technology stack used in the prototype deployment.}}{45}{table.caption.28}%
+\addvspace {10\p@ }
+\contentsfinish 

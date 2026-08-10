@@ -1,0 +1,169 @@
+\section{Overview}
+
+This chapter describes the dataset used throughout this thesis: its source, its five deception domains, how it was converted into a multilingual English/Bangla/Banglish corpus, and how it was split for training and evaluation. The dataset is described here as a standalone chapter, separate from the modeling pipeline in \Cref{chap:method}, since the same dataset construction underlies every experiment reported in \Cref{chap:results}.
+
+\section{Source Data}
+\label{sec:dataset-source}
+
+The starting point for this work is a stratified sample of \textbf{12{,}998 records} drawn from the Generalized Deception Dataset \cite{zeng2022generalized}, a publicly available English-language corpus that aggregates deceptive and truthful text across several everyday domains. Rather than using the source dataset in full, a stratified sample was taken that preserves class balance (deceptive vs.\ truthful) and domain distribution, keeping the working dataset large enough to fine-tune Transformer encoders meaningfully while remaining tractable to translate, transliterate, and train five backbones under two training paradigms within the available compute budget.
+
+\section{Deception Domains}
+\label{sec:dataset-domains}
+
+The dataset spans five deception domains, each of which plays a dual role in this thesis: as a semantic category for the classification task, and, in the federated setting (\Cref{sec:federated}), as exactly one federated client with zero data overlap with any other domain. \Cref{tab:dataset-domains} summarizes the size and class balance of each domain.
+
+\begin{table}[htbp]
+\centering
+\caption{Dataset composition by deception domain.}
+\label{tab:dataset-domains}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Domain} & \textbf{Total} & \textbf{Deceptive} & \textbf{Truthful} & \textbf{\% of Dataset} \\
+\midrule
+Fake News             & 6{,}496 & 3{,}248 & 3{,}248 & 50.0\% \\
+Product Reviews       & 2{,}238 & 1{,}119 & 1{,}119 & 17.2\% \\
+Phishing              & 1{,}654 &   827   &   827   & 12.7\% \\
+Political Statements  & 1{,}394 &   697   &   697   & 10.7\% \\
+Job Scams             & 1{,}216 &   608   &   608   &  9.4\% \\
+\midrule
+\textbf{Total}         & \textbf{12{,}998} & \textbf{6{,}499} & \textbf{6{,}499} & \textbf{100\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Every domain is exactly class-balanced (50\% deceptive, 50\% truthful) by construction, which removes within-domain class imbalance as a confound when interpreting per-domain results in \Cref{chap:results}. The domains are, however, unevenly sized -- Fake News alone accounts for half the dataset, while Job Scams accounts for under 10\% -- which is a direct consequence of how much labeled data was available per domain in the source corpus, and is preserved intentionally rather than artificially equalized, since equalizing it would require either discarding the majority of the Fake News data or duplicating the smaller domains.
+
+Brief working definitions of each domain, as used for translation and labeling:
+\begin{itemize}
+    \item \textbf{Fake News} -- fabricated or misleading news articles and headlines.
+    \item \textbf{Product Reviews} -- deceptive (fake) versus genuine online product reviews.
+    \item \textbf{Phishing} -- fraudulent messages designed to solicit sensitive information.
+    \item \textbf{Political Statements} -- misleading versus factual political claims.
+    \item \textbf{Job Scams} -- fraudulent versus legitimate job postings.
+\end{itemize}
+
+\section{Multilingual Conversion}
+\label{sec:dataset-multilingual}
+
+The source data is entirely in English. To evaluate the multilingual capability of the candidate encoder backbones under a realistic Bangladeshi \gls{cmc} setting, each record was converted into one of three linguistic registers using Google Translate together with a supplementary Bangla dictionary resource for domain-specific terms. \Cref{tab:dataset-language} reports the resulting language distribution, measured directly from the final dataset.
+
+\begin{table}[htbp]
+\centering
+\caption{Dataset composition by language register.}
+\label{tab:dataset-language}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Register} & \textbf{Records} & \textbf{\% of Dataset} \\
+\midrule
+English  & 7{,}796 & 60.0\% \\
+Bengali (Bangla script)  & 2{,}605 & 30.0\% \\
+Banglish (Romanized Bangla) & 2{,}597 & 10.0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+English was kept as the majority register (60\%), with the remaining 40\% split evenly between Bengali script and Banglish (20\% each) -- a roughly 60/30/20 split. Both minority registers are represented in large enough quantities (over 2{,}500 records each) to meaningfully stress-test the multilingual capability of each backbone, rather than appearing only as a token minority class. Each of the five domains follows this same overall language mixture, so language and domain are approximately independent in the dataset.
+
+\section{Quantifying Client Heterogeneity}
+\label{sec:dataset-heterogeneity}
+
+A distinguishing feature of this thesis, relative to prior federated fake-news and misinformation detection work, is \emph{how} the federated clients are formed. Existing federated fake-news studies (\Cref{chap:lr}) typically partition a \emph{single} domain across clients -- by user \cite{djenouri2024federated}, by random subsample \cite{lian2024find}, or by news source within one domain \cite{marulli2021exploring} -- which keeps the underlying vocabulary and topic distribution broadly similar from one client to the next. This thesis instead assigns each of the five \emph{entire, distinct deception domains} (\Cref{sec:dataset-domains}) to its own client, which is a qualitatively different, and considerably more severe, form of non-IID partitioning. Rather than asserting this informally, this severity is quantified directly by comparing the real, domain-based client partition against a random partition of the same data along three dimensions, using Jensen-Shannon (JS) divergence between each client's distribution and the pooled dataset distribution. \Cref{tab:dataset-heterogeneity} reports the results.
+
+\begin{table}[htbp]
+\centering
+\caption{Client heterogeneity by dimension: the real, domain-based client partition compared against a random partition of the same data (mean $\pm$ std over repeated random partitions). Multiplier is the real partition's JS divergence divided by the random baseline's mean.}
+\label{tab:dataset-heterogeneity}
+\begin{tabular}{@{}lccc c@{}}
+\toprule
+\textbf{Dimension} & \textbf{Real Partition} & \textbf{Random Baseline} & \textbf{Multiplier} & \textbf{$z$-score} \\
+ & \textbf{(JS Div.)} & \textbf{(Mean $\pm$ Std)} & & \\
+\midrule
+Label Distribution   & 0.0000 & 0.0001 $\pm$ 0.0001 & 0.00$\times$  & $-1.54$ \\
+Language Register    & 0.0000 & 0.0003 $\pm$ 0.0001 & 0.00$\times$  & $-1.90$ \\
+Vocabulary (TF-IDF)   & 0.1947 & 0.0089 $\pm$ 0.0002 & \textbf{21.85$\times$} & \textbf{1094.6} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The three dimensions tell a consistent and informative story. \textbf{Label distribution} is essentially identical between the real and random partitions (JS divergence 0.0000 in both cases, $z = -1.54$): every client is class-balanced (\Cref{tab:dataset-domains} confirms every domain is exactly 50/50 deceptive/truthful), so label imbalance is not a source of heterogeneity in this federated setup -- ruling it out as a confound for the accuracy results in \Cref{chap:results}. \textbf{Language register} is likewise nearly identical (JS divergence 0.0000, $z = -1.90$), since the 60/20/20 English/Bengali/Banglish mixture (\Cref{tab:dataset-language}) is applied consistently within every domain -- ruling out language imbalance as a confound as well.
+
+\textbf{Vocabulary}, measured via TF-IDF representations of each client's text, is a completely different picture: the real, domain-based partition has a JS divergence of 0.1947, against a random-partition baseline of only 0.0089 -- a \textbf{21.85$\times$ multiplier}, with a $z$-score of 1094.6, indicating that this level of vocabulary divergence would be essentially impossible to observe by chance under random partitioning. This confirms quantitatively what \Cref{sec:dataset-domains} states qualitatively: the five clients in this thesis's federated setup discuss genuinely different topics using genuinely different vocabularies (fake news headlines vs.\ phishing lures vs.\ product-review language vs.\ political rhetoric vs.\ job postings), and \textbf{vocabulary/topic divergence -- not label imbalance and not language imbalance -- is the primary source of client heterogeneity} in this thesis's federated learning setup.
+
+This quantified heterogeneity directly motivates the choice of \gls{fedprox} over plain \gls{fedavg} in \Cref{sec:federated}: a 21.85$\times$ vocabulary divergence relative to random partitioning is a far more severe form of client drift than \gls{fedavg} was designed to tolerate, and is also considerably more severe than the client heterogeneity present in prior federated fake-news studies, whose single-domain, same-topic partitioning strategies (\Cref{chap:lr}) would not be expected to produce a comparably large vocabulary divergence between clients.
+
+\section{Data Splitting}
+\label{sec:dataset-split}
+
+The combined multilingual dataset was split into training, validation, and test sets using a \textbf{70\%/10\%/20\%} stratified split (\Cref{tab:dataset-splits}), stratified on the label (\texttt{is\_deceptive}) so that each split preserves the same class balance as the full dataset.
+
+\begin{table}[htbp]
+\centering
+\caption{Train/validation/test split sizes.}
+\label{tab:dataset-splits}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Split} & \textbf{Records} & \textbf{\% of Dataset} \\
+\midrule
+Train      & 9{,}098 & 70.0\% \\
+Validation & 1{,}299 & 10.0\% \\
+Test       & 2{,}601 & 20.0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The training split is used in two different ways depending on the training paradigm: pooled together for centralized training (\Cref{sec:centralized}), or partitioned strictly by domain for federated training (\Cref{sec:federated}), with each of the five domains assigned to exactly one federated client. The validation and test splits are kept pooled (not partitioned by domain) in both paradigms, so that centralized and federated models are evaluated on the identical 2{,}601-record test set and their results remain directly comparable. All splits use a fixed random seed (42) so that the same partition is reproducible across every training run reported in this thesis.
+\subsection{Representative Dataset Samples}
+\label{sec:dataset-samples}
+
+To provide an intuitive understanding of the collected datasets, representative examples from each deception domain are presented in Table~\ref{tab:dataset_examples}. These examples illustrate the diversity of textual content included in the datasets. Although only one example from each dataset is shown for brevity, the complete corpus contains multilingual samples in English, Bangla, and Banglish.
+\begin{table*}[htbp]
+\centering
+\caption{Representative examples from the multilingual deception datasets .}
+\label{tab:dataset_examples}
+\renewcommand{\arraystretch}{1.2}
+\footnotesize
+\begin{tabularx}{\textwidth}{|l|c|X|c|}
+\hline
+\textbf{Dataset} & \textbf{Language} & \textbf{Example Text} & \textbf{Label} \\
+\hline
+
+Political Statements &
+English &
+There is not a single documented case of abuse of the bulk metadata collection program. &
+Truthful \\
+\hline
+
+Phishing &
+English &
+Take Control of Your Computer With This Top-of-the-Line Software... Protect your computer and valuable information... CLICK HERE TO ORDER NOW! &
+Deceptive \\
+\hline
+
+Job Scams &
+Banglish &
+Customer Service Associate hisebe Indianapolis, IN e kaj korte hobe. Right candidate amader talented team er ekjon guruttopurno member hobe.... . &
+Deceptive \\
+\hline
+
+Product Reviews &
+English &
+Great finish but poor specification of the product. Good for lightweight cameras but definitely not for heavy cameras or lenses. &
+Truthful \\
+\hline
+
+Fake News &
+{\bengali বাংলা} &
+{\bengali ইতিহাসের সবচেয়ে স্বচ্ছ প্রশাসন ইতিহাসে সবচেয়ে দুর্নীতিগ্রস্ত প্রশাসন হিসেবে পরিচিত হবে বলে দাবি করা হয়েছে।} &
+Deceptive \\
+\hline
+
+\end{tabularx}
+\end{table*}
+\section{Dataset Schema}
+\label{sec:dataset-schema}
+
+Each record in the dataset consists of four fields: \texttt{text} (the model input -- the English, Bengali, or Banglish version of the record, depending on which register it was assigned to), \texttt{original\_text} (the original English source text before translation/transliteration, retained for reference and error analysis), \texttt{language} (one of \texttt{english}, \texttt{bengali}, or \texttt{banglish}), and \texttt{is\_deceptive} (the binary label: 1 for deceptive, 0 for truthful). A fifth field, \texttt{task}, identifying the deception domain, is added during preprocessing (\Cref{sec:dataset-domains}) and is not part of the original per-domain source files.
+
+\section{Summary}
+
+This chapter described the construction of a 12{,}998-record, five-domain, three-register (English/Bengali/Banglish) deception detection dataset, exactly class-balanced within every domain, and its 70/10/20 stratified split into training, validation, and test sets. The next chapter (\Cref{chap:method}) describes the classification architecture and training procedures applied to this dataset.

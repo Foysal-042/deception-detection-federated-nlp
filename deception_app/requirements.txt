@@ -1,0 +1,12 @@
+# requirements.txt
+# Install with: pip install -r requirements.txt
+#
+# Core web framework
+Flask==3.0.3
+
+# Model + tokenizer
+torch>=2.1.0
+transformers>=4.40.0
+
+# transformers dependency, needed for some tokenizers (incl. BanglishBERT's)
+sentencepiece>=0.1.99

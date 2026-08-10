@@ -1,0 +1,16 @@
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces \xpg@aux {}{english}\ignorespaces Comparison between traditional centralized learning and privacy-preserving federated learning.}}{3}{figure.caption.8}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces \xpg@aux {}{english}\ignorespaces Overall pipeline of the proposed multilingual deception detection framework.}}{23}{figure.caption.14}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces \xpg@aux {}{english}\ignorespaces Architecture of the proposed transformer-based text classification model. Input text is tokenized and encoded using a pretrained transformer backbone, followed by attention pooling and a fully connected classification layer to predict deceptive or truthful content. }}{24}{figure.caption.15}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces \xpg@aux {}{english}\ignorespaces Architecture of the proposed federated learning framework. A central Flower server coordinates five federated clients, each representing a distinct deception domain.}}{28}{figure.caption.18}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces \xpg@aux {}{english}\ignorespaces Accuracy, macro-F1, and AUC-ROC across all five centralized and five federated models. }}{36}{figure.caption.22}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces \xpg@aux {}{english}\ignorespaces Radar comparison of the strongest centralized model, the strongest federated model, and the weakest federated model across all six evaluation metrics.}}{37}{figure.caption.23}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces \xpg@aux {}{english}\ignorespaces Centralized vs.\ federated accuracy for all five matched backbone pairs, with the resulting retention percentage annotated above each pair.}}{41}{figure.caption.26}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces \xpg@aux {}{english}\ignorespaces Frontend interface of the proposed multilingual deception detection system.}}{46}{figure.caption.29}%
+\contentsline {figure}{\numberline {5.5}{\ignorespaces \xpg@aux {}{english}\ignorespaces Backend architecture of the deployed multilingual deception detection system.}}{46}{figure.caption.30}%
+\addvspace {10\p@ }
+\contentsfinish 

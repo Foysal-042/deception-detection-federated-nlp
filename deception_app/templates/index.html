@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<!--
+  index.html
+  ----------
+  Single-page demo UI for the thesis:
+  "Privacy-Preserving Multilingual Deception Detection System"
+
+  Structure:
+    Section 1: Federated Learning Overview (static architecture diagram)
+    Section 2: Analyze Text (textarea + language dropdown + Analyze button)
+    Section 3: Prediction Result (filled in by script.js after /predict call)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy-Preserving Multilingual Deception Detection System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+
+  <header class="page-header">
+    <h1>Privacy-Preserving Multilingual Deception Detection System</h1>
+    <p class="subtitle">Federated Learning Deployment Demonstration &mdash; Thesis Interface</p>
+  </header>
+
+  <main class="page-content">
+
+    <!-- ================= SECTION 1: FEDERATED LEARNING OVERVIEW ================= -->
+    <section class="card" id="overview-card">
+      <h2>Federated Learning Overview</h2>
+      <p class="card-note">Visualization only &mdash; reflects the training pipeline used to produce the deployed model.</p>
+
+      <div class="fl-diagram">
+
+        <div class="fl-clients">
+          <div class="fl-client">
+            <span class="fl-icon" aria-hidden="true">📰</span>
+            <span class="fl-client-label">Client 1</span>
+            <span class="fl-client-domain">Fake News</span>
+          </div>
+          <div class="fl-client">
+            <span class="fl-icon" aria-hidden="true">🎣</span>
+            <span class="fl-client-label">Client 2</span>
+            <span class="fl-client-domain">Phishing</span>
+          </div>
+          <div class="fl-client">
+            <span class="fl-icon" aria-hidden="true">💼</span>
+            <span class="fl-client-label">Client 3</span>
+            <span class="fl-client-domain">Job Scam</span>
+          </div>
+          <div class="fl-client">
+            <span class="fl-icon" aria-hidden="true">⭐</span>
+            <span class="fl-client-label">Client 4</span>
+            <span class="fl-client-domain">Product Reviews</span>
+          </div>
+          <div class="fl-client">
+            <span class="fl-icon" aria-hidden="true">🏛️</span>
+            <span class="fl-client-label">Client 5</span>
+            <span class="fl-client-domain">Political Statements</span>
+          </div>
+        </div>
+
+        <div class="fl-connector" aria-hidden="true"></div>
+
+        <div class="fl-node fl-server">
+          <span class="fl-icon" aria-hidden="true">🌐</span>
+          <span class="fl-node-label">Flower Server</span>
+        </div>
+
+        <div class="fl-arrow" aria-hidden="true">↓</div>
+
+        <div class="fl-node fl-aggregation">
+          <span class="fl-icon" aria-hidden="true">🧮</span>
+          <span class="fl-node-label">FedProx Aggregation</span>
+        </div>
+
+        <div class="fl-arrow" aria-hidden="true">↓</div>
+
+        <div class="fl-node fl-global-model">
+          <span class="fl-icon" aria-hidden="true">🧠</span>
+          <span class="fl-node-label">Global BanglishBERT Model</span>
+        </div>
+
+        <div class="fl-arrow" aria-hidden="true">↓</div>
+
+        <div class="fl-status">
+          <span class="fl-status-dot" aria-hidden="true"></span>
+          <span class="fl-status-text">Status: Training Completed</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= SECTION 2: ANALYZE TEXT ================= -->
+    <section class="card" id="analyze-card">
+      <h2>Analyze Text</h2>
+
+      <label for="input-text" class="field-label">Text to analyze</label>
+      <textarea
+        id="input-text"
+        rows="6"
+        placeholder="Paste or type a message, review, statement, or job post here..."
+      ></textarea>
+
+      <div class="controls-row">
+        <div class="field-group">
+          <label for="language-select" class="field-label">Language</label>
+          <select id="language-select">
+            <option value="auto" selected>Auto</option>
+            <option value="english">English</option>
+            <option value="bangla">Bangla</option>
+            <option value="banglish">Banglish</option>
+          </select>
+        </div>
+
+        <button id="analyze-btn" type="button">Analyze</button>
+      </div>
+
+      <p id="error-message" class="error-message" hidden></p>
+    </section>
+
+    <!-- ================= SECTION 3: PREDICTION RESULT ================= -->
+    <section class="card" id="result-card" hidden>
+      <h2>Prediction Result</h2>
+
+      <div class="result-grid">
+        <div class="result-item">
+          <span class="result-label">Prediction</span>
+          <span class="result-value" id="result-prediction">&mdash;</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Confidence Score</span>
+          <span class="result-value" id="result-confidence">&mdash;</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Model</span>
+          <span class="result-value" id="result-model">BanglishBERT (Federated)</span>
+        </div>
+      </div>
+
+      <div class="privacy-note">
+        <span class="privacy-icon" aria-hidden="true">🔒</span>
+        <span>No raw text is exchanged during federated training.</span>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="page-footer">
+    <p>Thesis Demonstration Interface &mdash; Federated Learning Deployment</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

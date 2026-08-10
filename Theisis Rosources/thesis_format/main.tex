@@ -1,0 +1,81 @@
+% CUET CSE THESIS FINAL REPORT FORMAT
+% @version     1.0
+% !TEX program = lualatex
+% The document class
+\documentclass{cuetcsethesis}
+
+% Custom packages to include
+\input{resources/packages}
+
+% Total information regarding the thesis 
+\input{resources/thesis-details}
+
+% Adding a Bib resource file 
+\input{resources/bib-setup}
+
+% Adding a Abbreviation file
+\input{chapters/abbreviation}
+
+
+
+\begin{document}
+
+% start of document
+
+% Create the title page, which is two page in this format.
+\maketitle
+
+% Certification page
+\certification
+
+% Declaration of originality
+\input{chapters/declaration}
+
+% Acknowledgements
+\input{chapters/acknowledgements}
+
+% The abstract of the thesis
+\input{chapters/abstract}
+
+% Print out the table of tables and table of figures
+\thesisTables
+
+% start of thesis body
+\thesisBodyStart
+
+% Include introduction
+\chapter{Introduction}
+\label{chap:intro}
+\input{chapters/introduction}
+
+% Include Literature Review
+\chapter{Literature Review}
+\label{chap:lr}
+\input{chapters/literature-review}
+
+% Include Dataset
+\chapter{Dataset}
+\label{chap:dataset}
+\input{chapters/dataset}
+
+% Include Methodology
+\chapter{Methodology}
+\label{chap:method}
+\input{chapters/methodology}
+
+% Include Experimental Results and Analysis
+\chapter{Results and Discussions}
+\label{chap:results}
+\input{chapters/result-analysis}
+
+% Conclusion
+\chapter{Conclusion}
+\label{chap:conclusion}
+\input{chapters/conclusion}
+
+% end of thesis body
+
+% Print the references
+\printReferences
+
+\end{document}

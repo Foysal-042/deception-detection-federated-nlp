@@ -1,0 +1,177 @@
+\section{Introduction}
+
+This chapter surveys the work most relevant to this thesis along three threads: (i) text-based deception and misinformation detection in general, including the transition from hand-crafted linguistic cues to Transformer-based language models; (ii) multilingual and Bangla-aware pretrained encoders, which are the backbones used throughout this work; and (iii) federated learning, both in general and as it has already been applied to fake-news and misinformation detection specifically. The chapter closes by summarizing the gaps in the existing literature that motivate the design choices made in \Cref{chap:method}.
+
+\section{Deception Detection in Text}
+
+Early computational deception detection treated the problem primarily as a linguistic-cue extraction task. Zhou et al.\ \cite{zhou2003exploratory} conducted one of the first systematic studies of deceptive cues in text-based \gls{cmc}, asking 30 dyads to complete a cooperative desert-survival task under truthful or deceptive instructions, and found statistically significant differences between the linguistic content of truthful and deceptive messages -- for example, deceivers tended to produce messages with different pronoun usage and lexical complexity than truth-tellers. This established the empirical premise underlying almost all later work: deception leaves a detectable trace in word choice, even without access to non-verbal cues.
+
+Later work replaced hand-engineered features with learned representations from deep contextual language models. Fornaciari et al.\ \cite{fornaciari2021bertective} introduced \emph{BERTective}, a \gls{bert}-based system for deception detection that additionally incorporates contextual information surrounding the target utterance (such as speaker identity and conversational history), and showed that this contextual signal, combined with a pretrained language model, substantially outperforms prior state-of-the-art results on real, high-stakes deception data rather than laboratory role-play data. This is an important distinction from earlier lab-based studies such as \cite{zhou2003exploratory}, since it demonstrates that language-model-based deception cues generalize beyond artificial task settings.
+
+Ilias et al.\ \cite{ilias2022explainable} pushed further on the interpretability side, applying Transformer-based models to verbal deception detection while explicitly examining which tokens and linguistic patterns the model relies on to make its decision. Their explainability analysis is a useful reminder that high classification accuracy alone does not guarantee that a deception-detection model is exploiting genuinely deception-relevant signal rather than dataset-specific artifacts, a concern that is also relevant to the domain-specific fine-tuning performed in this thesis.
+
+Deception detection has also been studied beyond pure text. Gallardo-Antol{\'i}n and Montero \cite{gallardo2021detecting} proposed a multimodal attention LSTM-based framework that fuses gaze and speech signals for deception detection, confirming that non-verbal cues remain informative when they are available, but also underscoring, by contrast, why text-only \gls{cmc} deception detection (the setting of this thesis) is intrinsically harder: none of those visual or acoustic cues exist in a typed message, phishing e-mail, or online review.
+
+\section{Benchmark Datasets Across Deception Domains}
+\label{sec:lr-datasets}
+
+Because this thesis spans five deception domains rather than one, it is useful to briefly survey the benchmark dataset that anchors each domain in the wider literature, since these datasets collectively motivate the domain boundaries used to partition federated clients in \Cref{chap:method}. For fake news specifically, the \emph{LIAR} dataset \cite{wang2017liar} of 12{,}836 short, manually fact-checked political statements from PolitiFact, and \emph{FakeNewsNet} \cite{shu2020fakenewsnet}, which pairs news articles with social context and spatiotemporal metadata, are the two most widely used English-language benchmarks; Hu et al.\ \cite{hu2022deep} survey the broader deep-learning literature built on top of datasets such as these. For product reviews, Ott et al.\ \cite{ott2011finding} introduced the first gold-standard deceptive-opinion-spam dataset, showing that a linear classifier over word $n$-gram and psycholinguistic (LIWC) features could reach nearly 90\% accuracy at distinguishing fabricated hotel reviews from genuine ones -- a result that pre-dates, but anticipates, the same task studied here with Transformer encoders. For job scams, Vidros et al.\ \cite{vidros2017automatic} released the Employment Scam Aegean Dataset (EMSCAD), 17{,}880 real job postings from the Workable platform with roughly 5\% labeled fraudulent, which remains the standard benchmark for this domain. For political statements and claim verification more broadly, Thorne et al.\ \cite{thorne2018fever} introduced FEVER, a large-scale dataset of over 180{,}000 claims paired with Wikipedia evidence, which -- while framed as evidence-based fact verification rather than claim-only classification -- established political and factual claims as a distinct deception domain in the NLP literature. Finally, and most directly relevant to the Bangla portion of this thesis, Pranto et al.\ \cite{pranto2022misinformed} studied COVID-19-related fake news in Bangla on Facebook, fine-tuning BERT to reach an F1-score of 0.97 on Bangla misinformation, and topic-modeling the fake news into system-, belief-, and social-related categories -- to date one of the only studies to combine Bangla text with modern Transformer-based misinformation detection, and a direct precedent for the Bangla and Banglish portions of the dataset constructed in \Cref{chap:dataset}.
+
+For the phishing domain specifically, Salloum et al.\ \cite{salloum2022systematic} provide a systematic literature review of NLP-based phishing email detection techniques, while Thapa et al.\ \cite{thapa2023evaluation} evaluate federated learning specifically for phishing email detection, reporting that federated training can approach centralized accuracy on this task -- a finding directly relevant to the accuracy-retention question this thesis investigates for deception detection more broadly, but, like the fake-news-specific federated work discussed below, evaluated on a single domain and a single language rather than the five-domain, multilingual setting considered here.
+
+\section{Fake News and Misinformation Detection}
+
+Deception detection and fake-news detection overlap substantially, since a fake news article is itself a deceptive text artifact, and much of the more recent, larger-scale literature has organized itself around the fake-news framing specifically. Alqadi et al.\ \cite{alqadi2025transfer} applied transfer learning with large language models to fake-news detection and classification, reporting strong results from fine-tuning pretrained language representations rather than training classifiers from scratch -- an approach directly analogous to the backbone fine-tuning strategy adopted in this thesis, though applied there to a single domain and a single language.
+
+Djenouri et al.\ \cite{djenouri2024federated} proposed a federated convolution Transformer for fake-news detection in Internet-of-Things applications, combining user clustering (via dense embeddings and $k$-means) with a convolutional Transformer classifier trained under federated learning and a trusted-authority verification step, and reported an average accuracy of 0.85 on Twitter data compared to non-federated baselines below 0.81. This is one of the few works that combines Transformer-style architectures with federated training for fake-news detection, but the federation there is driven by user clustering within a single platform and a single language, rather than by naturally-arising, non-overlapping deception domains as in this thesis.
+
+Abdal et al.\ \cite{abdal2023transformer} addressed Bangla fake-news detection specifically, fine-tuning DistilBERT on a Bangla fake-news corpus and reporting competitive results relative to larger models, which supports the broader premise of this thesis that Bangla-capable Transformer encoders are a viable foundation for deception-related classification in low-resource-language settings, even though that work does not consider federated training or a mixed English/Bangla/Banglish input distribution.
+
+\section{Federated Learning for Fake News and Misinformation Detection}
+
+Federated learning was introduced by McMahan et al.\ \cite{mcmahan2017communication} as a way to train a shared model across many decentralized clients without those clients ever transmitting their raw data, using the Federated Averaging (\gls{fedavg}) algorithm to aggregate locally-trained model updates via a sample-weighted average. \gls{fedavg} assumes, implicitly, that client data is reasonably close to independent and identically distributed (IID); when this assumption is badly violated -- as it is by design in this thesis, where each client holds an entirely separate deception domain -- \gls{fedavg} is known to suffer from client drift, where locally optimal models diverge significantly from the shared global objective across rounds. Li et al.\ \cite{li2020federated} proposed \gls{fedprox} to address exactly this failure mode, adding a proximal regularization term to each client's local objective that penalizes divergence from the global model snapshot at the start of the round, which makes it a natural fit for the strongly non-\gls{fl}-friendly, task-partitioned federated setting used in this thesis. Kairouz et al.\ \cite{kairouz2021advances} survey the broader open problems in federated learning -- including client heterogeneity, communication efficiency, and privacy -- of which the extreme domain-level partitioning studied in this thesis is one concrete instance. Complementary privacy mechanisms exist at the communication layer, such as Bonawitz et al.'s \cite{bonawitz2017practical} secure aggregation protocol, which prevents the server itself from inspecting any individual client's update, and at the optimization layer, such as Abadi et al.'s \cite{abadi2016deep} differentially private stochastic gradient descent (DP-SGD), which bounds how much any single training example can influence the shared model; neither is used in the federated pipeline built in this thesis, but both are natural hardening steps that could be layered on top of it (\Cref{sec:future-work}). Where the heterogeneity across clients reflects genuinely different underlying tasks, as it does here, personalized and clustered federated learning approaches such as that of Ghosh et al.\ \cite{ghosh2020efficient} offer an alternative to forcing every client toward a single shared global model, and are discussed further as future work in \Cref{sec:future-work}.
+
+Federated learning has already been applied to fake-news and misinformation detection specifically. Lian et al.\ \cite{lian2024find} proposed FIND, a privacy-enhanced federated learning system for intelligent fake-news detection that is explicitly motivated by the privacy risk of centralizing user browsing history and social-media activity to train a fake-news classifier, echoing the motivation for this thesis. Marulli et al.\ \cite{marulli2021exploring} explored a federated learning approach to authorship attribution of misleading information from heterogeneous sources, framing the problem as distinguishing "true" and "false" information producers across sources with different writing styles, which is conceptually close to the multi-domain heterogeneity this thesis studies, though restricted to a two-class authorship framing rather than the five-domain, cross-lingual deception setting considered here.
+
+Compared to this existing federated fake-news literature, the federated setting in this thesis is deliberately harsher: rather than partitioning a single dataset across clients by user, source, or random split (which still leaves considerable statistical similarity between clients), each client here holds an entire, non-overlapping deception domain -- fake news, product reviews, phishing, political statements, or job scams -- which is a much more extreme form of non-\gls{fl}-friendly heterogeneity than is typically evaluated in the federated fake-news detection literature.
+
+\section{Multilingual and Bangla-Aware Transformer Encoders}
+
+The classification architecture in this thesis is built on top of pretrained Transformer encoders \cite{vaswani2017attention}, in the tradition established by \gls{bert} \cite{devlin2019bert}. Several multilingual and Bangla-focused variants of this architecture are directly relevant. Multilingual BERT (\gls{mbert}) \cite{devlin2019bert} extends the original \gls{bert} pretraining recipe to over 100 languages using a shared subword vocabulary and Wikipedia text, giving it broad but comparatively shallow multilingual competence. \gls{xlmr} \cite{conneau2020xlmr} improves on this by pretraining a RoBERTa-style masked-language model on a much larger, cleaner multilingual corpus (CommonCrawl-based CC-100), and has become a strong general-purpose multilingual baseline. \gls{muril} \cite{khanuja2021muril} instead specializes in Indian languages (including Bangla), augmenting standard masked-language-model pretraining with translation and transliteration pairs so that the model explicitly learns to relate a word in one Indian script to its Romanized or cross-lingual counterpart -- directly relevant to the Banglish register used in this thesis. BanglaBERT \cite{bhattacharjee2022banglabert} is pretrained specifically on a large Bangla corpus and benchmarked on Bangla natural-language-understanding tasks, making it (and its BanglishBERT variant used in this work) the strongest available option when the input text is predominantly Bangla or Banglish. Finally, \gls{albert} \cite{lan2020albert} demonstrates that parameter-sharing and factorized embeddings can substantially shrink a \gls{bert}-style model while retaining most of its accuracy, motivating the use of a lightweight multilingual \gls{albert} variant and a distilled \gls{xlmr} variant in this thesis as compute-efficient alternatives suitable for a federated setting where each client must repeatedly fine-tune the encoder locally. The distillation strategy behind this thesis's lightweight federated backbones follows two influential lines of compression work: Sanh et al.'s \cite{sanh2019distilbert} DistilBERT, which halves BERT's depth via knowledge distillation while retaining most of its language understanding, and Liu et al.'s \cite{liu2019roberta} RoBERTa, whose more thoroughly optimized pretraining recipe (dynamic masking, larger batches, no next-sentence-prediction objective) underlies the multilingual XLM-R backbone used in this thesis and is the base model subsequently distilled into the DistilXLM-R backbone (\Cref{sec:backbones}). Separately, Reimers and Gurevych's \cite{reimers2019sentence} Sentence-BERT demonstrates that a Siamese fine-tuning objective can turn BERT-style token embeddings into semantically meaningful sentence-level embeddings far more efficiently than pairwise cross-encoding; while this thesis uses learned attention pooling rather than Sentence-BERT's Siamese objective (\Cref{sec:arch}), both approaches address the same underlying problem of converting per-token Transformer output into a single, classification-ready sequence representation.
+\subsection{Comparative Summary of Existing Studies}
+
+The studies reviewed in this chapter demonstrate the significant progress made
+in deception detection, fake news detection, and privacy-preserving machine
+learning. Earlier approaches mainly relied on handcrafted linguistic features,
+whereas recent studies increasingly employ transformer-based models to capture
+contextual information and improve classification performance. In parallel,
+federated learning has gained attention as an effective training strategy that
+enables collaborative model development without sharing raw data.
+
+Table~\ref{tab:lit-summary} presents a comparative summary of the most relevant
+studies discussed in this chapter. The table highlights the research domain,
+methodology, datasets, and major findings of previous work, providing a concise
+overview of the current state of research.
+Overall, the reviewed studies demonstrate that transformer-based 
+%=========================================================
+% Paste your longtable here
+%=========================================================
+
+{\small
+\begin{longtable}{|>{\raggedright\arraybackslash}p{3.0cm}|>{\raggedright\arraybackslash}p{2.1cm}|>{\raggedright\arraybackslash}p{2.3cm}|>{\raggedright\arraybackslash}p{2.0cm}|>{\raggedright\arraybackslash}p{4.0cm}|}
+\caption{Comparison of representative studies in deception detection and federated learning.}
+\label{tab:lit-summary} \\
+\hline
+\textbf{Study} &
+\textbf{Domain} &
+\textbf{Approach} &
+\textbf{Dataset} &
+\textbf{Key Finding} \\
+\hline
+\endfirsthead
+
+\multicolumn{5}{|c|}{\tablename\ \thetable\ -- continued from previous page} \\
+\hline
+\textbf{Study} &
+\textbf{Domain} &
+\textbf{Approach} &
+\textbf{Dataset} &
+\textbf{Key Finding} \\
+\hline
+\endhead
+
+\hline
+\endfoot
+
+\hline
+\endlastfoot
+
+Ott et al.~\cite{ott2011finding}
+&
+Deception Detection
+&
+SVM + LIWC
+&
+Hotel Reviews
+&
+Lexical and psycholinguistic features achieved about 90\% accuracy for deceptive review detection.
+\\ \hline
+
+Fornaciari et al.~\cite{fornaciari2021bertective}
+&
+Text Deception
+&
+Context-aware BERT
+&
+Real-world transcripts
+&
+Contextual information significantly improved deception detection performance.
+\\ \hline
+
+Lian et al.~\cite{lian2024find}
+&
+Privacy-preserving Fake News
+&
+Federated Learning (FIND)
+&
+Social-media data
+&
+Federated training preserved privacy while maintaining competitive detection performance.
+\\ \hline
+
+Djenouri et al.~\cite{djenouri2024federated}
+&
+Federated Fake News
+&
+Federated Transformer
+&
+Twitter
+&
+Transformer-based federated learning outperformed conventional centralized baselines.
+\\ \hline
+
+Abdal et al.~\cite{abdal2023transformer}
+&
+Bangla Fake News
+&
+Fine-tuned DistilBERT
+&
+Bangla corpus
+&
+DistilBERT achieved high accuracy for Bangla fake news classification.
+\\ \hline
+
+Thapa et al.~\cite{thapa2023evaluation}
+&
+Federated Phishing Detection
+&
+Federated Learning
+&
+Phishing emails
+&
+Federated models achieved performance close to centralized training while protecting data privacy.
+\\ \hline
+
+\end{longtable}
+}
+models have
+substantially improved performance across various deception-related tasks, while
+federated learning provides an effective mechanism for preserving data privacy
+during model training. 
+However, most existing research focuses on a single
+language, a specific deception domain, or centralized learning settings.
+Relatively few studies investigate multilingual deception detection using a
+privacy-preserving federated framework, particularly for Banglish or code-mixed
+text.
+
+These limitations reveal a clear research gap and motivate the framework
+proposed in this thesis.
+
+
+\section{Summary and Research Gap}
+
+Taken together, the literature establishes three separate facts: that Transformer-based language models are effective for deception and fake-news detection \cite{fornaciari2021bertective, ilias2022explainable, alqadi2025transfer}; that federated learning, and \gls{fedprox} in particular, is an effective way to train such models without centralizing sensitive text \cite{mcmahan2017communication, li2020federated, lian2024find, djenouri2024federated}; and that multilingual and Bangla-specific pretrained encoders are viable for downstream Bangla text classification \cite{abdal2023transformer, khanuja2021muril, bhattacharjee2022banglabert}. However, no existing work combines all three: a single deception-detection architecture that is (a) evaluated across a genuinely mixed English/Bangla/Banglish input distribution, (b) trained federatedly across multiple, entirely non-overlapping deception domains rather than a single task, and (c) benchmarked across several interchangeable multilingual encoder backbones under identical centralized and federated conditions so that the specific cost of federation, isolated from the choice of backbone, can be measured directly. This is the gap that the remainder of this thesis addresses.
+
+\subsection{Positioning of This Thesis}
+
+Relative to the federated fake-news detection literature \cite{djenouri2024federated, lian2024find, marulli2021exploring}, this thesis (i) broadens the task from fake news alone to five deception domains treated as five federated clients, (ii) evaluates under a genuinely multilingual data distribution rather than a monolingual one, and (iii) uses \gls{fedprox} rather than plain \gls{fedavg} specifically because of the severity of the resulting non-\gls{fl}-friendly heterogeneity. Relative to the multilingual/Bangla NLP literature \cite{khanuja2021muril, bhattacharjee2022banglabert, abdal2023transformer}, this thesis contributes a like-for-like comparison of five backbones under both centralized and federated training, using a shared attention-pooling classification head, and reports the accuracy-retention metric as a more meaningful diagnostic of the privacy-utility trade-off than raw accuracy alone.

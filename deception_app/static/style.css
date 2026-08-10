@@ -1,0 +1,360 @@
+/*
+  style.css
+  ---------
+  Styling for the thesis demo interface.
+  Requirements followed:
+    - White background
+    - Blue accent color
+    - Rounded cards
+    - Professional / academic appearance
+    - No gradients, no animations
+*/
+
+:root {
+  --color-bg: #ffffff;
+  --color-surface: #f7f9fc;
+  --color-border: #e0e4ea;
+  --color-text: #1f2937;
+  --color-text-muted: #5b6472;
+  --color-accent: #1d4ed8;      /* primary blue */
+  --color-accent-dark: #1e3a8a; /* darker blue for hover/emphasis */
+  --color-accent-soft: #e8eefc; /* light blue tint for chips/backgrounds */
+  --color-success: #1d7a4c;
+  --color-danger: #b3261e;
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --font-body: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+/* ---------- Header ---------- */
+
+.page-header {
+  padding: 32px 24px 20px;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.page-header h1 {
+  margin: 0 0 6px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-accent-dark);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+/* ---------- Layout ---------- */
+
+.page-content {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.card {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+.card h2 {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+  color: var(--color-text);
+}
+
+.card-note {
+  margin: 0 0 18px;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Section 1: Federated Learning Overview ---------- */
+
+.fl-diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.fl-clients {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.fl-client {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 6px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.fl-client-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-accent-dark);
+}
+
+.fl-client-domain {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.fl-connector {
+  width: 2px;
+  height: 20px;
+  background-color: var(--color-border);
+}
+
+.fl-node {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  min-width: 240px;
+  justify-content: center;
+}
+
+.fl-server {
+  background-color: var(--color-accent-soft);
+  border-color: var(--color-accent);
+}
+
+.fl-aggregation {
+  background-color: var(--color-surface);
+}
+
+.fl-global-model {
+  background-color: var(--color-accent-soft);
+  border-color: var(--color-accent);
+}
+
+.fl-node-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.fl-arrow {
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.fl-icon {
+  font-size: 1.1rem;
+}
+
+.fl-status {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  background-color: #eefaf2;
+  border: 1px solid #bfe6cd;
+}
+
+.fl-status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: var(--color-success);
+  display: inline-block;
+}
+
+.fl-status-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-success);
+}
+
+/* ---------- Section 2: Analyze Text ---------- */
+
+.field-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+}
+
+#input-text {
+  width: 100%;
+  resize: vertical;
+  padding: 12px 14px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+#input-text:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.controls-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+}
+
+select {
+  padding: 9px 12px;
+  font-size: 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-width: 160px;
+}
+
+button#analyze-btn {
+  padding: 10px 22px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: var(--color-accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+button#analyze-btn:hover {
+  background-color: var(--color-accent-dark);
+}
+
+button#analyze-btn:disabled {
+  background-color: #9db3e8;
+  cursor: not-allowed;
+}
+
+.error-message {
+  margin-top: 12px;
+  color: var(--color-danger);
+  font-size: 0.85rem;
+}
+
+/* ---------- Section 3: Prediction Result ---------- */
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.result-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.result-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.result-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.result-value.truthful {
+  color: var(--color-success);
+}
+
+.result-value.deceptive {
+  color: var(--color-danger);
+}
+
+.privacy-note {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background-color: var(--color-accent-soft);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--color-accent-dark);
+}
+
+/* ---------- Footer ---------- */
+
+.page-footer {
+  text-align: center;
+  padding: 18px;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 640px) {
+  .fl-clients {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .result-grid {
+    grid-template-columns: 1fr;
+  }
+  .controls-row {
+    align-items: stretch;
+  }
+  button#analyze-btn {
+    width: 100%;
+  }
+}

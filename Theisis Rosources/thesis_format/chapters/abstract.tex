@@ -1,0 +1,9 @@
+\begin{abstract}
+
+Deceptive text, including fake news, phishing messages, fraudulent reviews, misleading political statements, and fake job postings, has become a major challenge in online communication. Existing deep learning approaches primarily focus on English text and rely on centralized training, which requires collecting users' data on a central server and raises privacy concerns. This thesis addresses these limitations by proposing a multilingual federated learning framework for deception detection using English, Bangla, and Banglish data.
+
+A class-balanced dataset of 12,998 samples was constructed from the Generalized Deception Dataset, covering five deception domains: fake news, product reviews, phishing, political statements, and job scams. The data were partitioned into five domain-specific federated clients to simulate a realistic heterogeneous environment. Five pretrained Transformer backbones, namely mBERT, DistilXLM-R, MuRIL, BanglishBERT, and multilingual ALBERT, were evaluated using a shared attention-based classification architecture under both centralized and federated (FedProx) training.
+
+Experimental results show that BanglishBERT achieved the best overall performance, obtaining an accuracy of 82.85\% under centralized training and 75.98\% in the federated setting. Across all evaluated models, federated learning retained between 89.7\% and 94.3\% of the corresponding centralized accuracy despite the heterogeneous client distribution. The results demonstrate that the proposed framework effectively balances privacy preservation and classification performance while enabling multilingual deception detection without sharing raw user data.
+
+\end{abstract}
